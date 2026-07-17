@@ -330,7 +330,7 @@
     const fraudScore = +(Math.random() * (0.79 - 0.71) + 0.71).toFixed(3);
     log(`Initiating payment · Fraud score: <span class="log-warn">${fraudScore}</span> · Above threshold`, 'warn');
 
-    const { data, error } = await sb.from('transactions').insert([{
+    const { data, error } = await sb.from('fg_events').insert([{
       device_id: 'owner-secondary',
       device_label: 'Owner Secondary Device',
       cardholder: 'Angelo M.',

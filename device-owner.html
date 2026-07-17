@@ -368,7 +368,7 @@
 
     log(`Initiating payment · Fraud score: <span style="color:var(--success)">${fraudScore}</span>`, 'info');
 
-    const { data, error } = await sb.from('transactions').insert([{
+    const { data, error } = await sb.from('fg_events').insert([{
       device_id: 'owner-main',
       device_label: 'Owner Main Device',
       cardholder: 'Angelo M.',
@@ -388,7 +388,7 @@
 
     // Below threshold — approve instantly
     setTimeout(async () => {
-      await sb.from('transactions').update({ status: 'approved', resolved_at: new Date().toISOString() }).eq('id', txId);
+      await sb.from('fg_events').update({ status: 'approved', resolved_at: new Date().toISOString() }).eq('id', txId);
       log('Status: <span class="log-ok">APPROVED</span>', 'ok');
       document.getElementById('scoreDisplay').textContent = fraudScore;
       document.getElementById('checkoutView').style.display = 'none';
@@ -441,7 +441,7 @@
     if (!pendingTxId) return;
 
     const newStatus = resp === 'approved' ? 'confirmed' : 'blocked';
-    await sb.from('transactions').update({
+    await sb.from('fg_events').update({
       status: newStatus,
       owner_response: resp,
       resolved_at: new Date().toISOString()

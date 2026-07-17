@@ -356,7 +356,7 @@
     const fraudScore = +(Math.random() * (0.97 - 0.82) + 0.82).toFixed(3);
     log(`Initiating payment · Fraud score: <span class="log-err">${fraudScore}</span>`, 'err');
 
-    const { data, error } = await sb.from('transactions').insert([{
+    const { data, error } = await sb.from('fg_events').insert([{
       device_id: 'fraudster',
       device_label: 'Fraudster Device',
       cardholder: 'Angelo M.',

@@ -236,8 +236,8 @@
     </div>
     <div class="empty-state" id="emptyState">
       <div class="empty-icon">📡</div>
-      <div class="empty-title">Listening for transactions</div>
-      <div class="empty-sub">Open Device 1, 2, or 3 and click Pay to see transactions appear here.</div>
+      <div class="empty-title">Listening for fg_events</div>
+      <div class="empty-sub">Open Device 1, 2, or 3 and click Pay to see fg_events appear here.</div>
     </div>
   </div>
 </div>
@@ -380,7 +380,7 @@
   }
 
   async function loadAll() {
-    const { data } = await sb.from('transactions').select('*').order('created_at', { ascending: false });
+    const { data } = await sb.from('fg_events').select('*').order('created_at', { ascending: false });
     if (!data) return;
     data.reverse().forEach(addTx);
     updateStats(data);
@@ -407,13 +407,13 @@
 
   // Subscribe to inserts and updates
   sb.channel('dashboard-feed')
-    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'transactions' }, payload => {
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'fg_events' }, payload => {
       const tx = payload.new;
       if (txMap[tx.id]) return; // already there
       addTx(tx);
       recomputeStats();
     })
-    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'transactions' }, payload => {
+    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'fg_events' }, payload => {
       const tx = payload.new;
       if (!txMap[tx.id]) { addTx(tx); } else { updateCard(tx); }
       recomputeStats();
@@ -421,13 +421,13 @@
     .subscribe();
 
   async function recomputeStats() {
-    const { data } = await sb.from('transactions').select('status');
+    const { data } = await sb.from('fg_events').select('status');
     if (data) updateStats(data);
   }
 
   async function clearAll() {
-    if (!confirm('Delete all transactions? This cannot be undone.')) return;
-    await sb.from('transactions').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+    if (!confirm('Delete all fg_events? This cannot be undone.')) return;
+    await sb.from('fg_events').delete().neq('id', '00000000-0000-0000-0000-000000000000');
     // Clear DOM
     Object.keys(txMap).forEach(id => { txMap[id].remove(); delete txMap[id]; });
     document.getElementById('emptyState').style.display = '';
