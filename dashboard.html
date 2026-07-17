@@ -308,7 +308,7 @@
       <div class="tx-card-top">
         <div>
           <div class="tx-device">${deviceIcon(tx.device_id)} ${tx.device_label || tx.device_id}</div>
-          <div class="tx-merchant">${tx.merchant} <span style="font-weight:400;color:var(--text-2);font-size:0.85em;">· ····${tx.card_last4}</span></div>
+          <div class="tx-merchant">${tx.merchant} <span style="font-weight:400;color:var(--text-2);font-size:0.85em;">· ····${'4829'}</span></div>
           <div style="margin-top:6px;">
             <span class="status-badge ${badgeClass(tx.status)}" id="badge-${tx.id}">${badgeLabel(tx.status)}</span>
             ${tx.owner_response ? `<span style="font-size:0.7rem;color:var(--text-3);margin-left:8px;">Owner: ${tx.owner_response}</span>` : ''}
