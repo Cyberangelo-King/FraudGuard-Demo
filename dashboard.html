@@ -9,432 +9,408 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --bg: #07070d; --bg-2: #0d0d18; --bg-3: #12121e;
-      --surface: #181828; --surface-2: #1e1e32;
-      --border: rgba(255,255,255,0.07); --border-2: rgba(255,255,255,0.11);
-      --accent: #00d4ff; --accent-glow: rgba(0,212,255,0.12);
-      --success: #00c853; --success-glow: rgba(0,200,83,0.12);
-      --danger: #ff3b30; --danger-glow: rgba(255,59,48,0.12);
-      --warning: #ffb020; --warning-glow: rgba(255,176,32,0.12);
-      --text: #f0f0f8; --text-2: #9898b8; --text-3: #5c5c80;
-      --font: 'DM Sans', -apple-system, sans-serif;
-      --radius: 12px;
+      --bg: #0a0a0f;
+      --surface: #1a1a28;
+      --surface2: #222235;
+      --accent: #00d4ff;
+      --accent-dim: rgba(0, 212, 255, 0.1);
+      --success: #00c853;
+      --danger: #ff3b30;
+      --warning: #ffb020;
+      --text: #f0f0f5;
+      --muted: #888899;
+      --border: rgba(255,255,255,0.07);
     }
-    html { font-size: 15px; }
-    body { background: var(--bg); color: var(--text); font-family: var(--font); min-height: 100vh; display: flex; flex-direction: column; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg); color: var(--text);
+      min-height: 100vh; display: flex; flex-direction: column;
+    }
 
-    /* TOP BAR */
-    header {
-      position: sticky; top: 0; z-index: 100;
-      background: rgba(7,7,13,0.92); backdrop-filter: blur(16px);
-      border-bottom: 1px solid var(--border);
-      padding: 0 2rem;
+    /* Topbar */
+    .topbar {
+      padding: 0.9rem 2rem;
       display: flex; align-items: center; justify-content: space-between;
-      height: 60px; flex-shrink: 0;
-    }
-    .header-left { display: flex; align-items: center; gap: 14px; }
-    .logo { width: 30px; height: 30px; border-radius: 8px;
-      background: linear-gradient(135deg, #00d4ff, #0080ff);
-      display: flex; align-items: center; justify-content: center;
-      font-weight: 700; font-size: 12px; color: #000; text-decoration: none; }
-    .header-title { font-weight: 700; font-size: 0.95rem; letter-spacing: -0.01em; }
-    .header-sub { font-size: 0.72rem; color: var(--text-3); }
-    .live-badge {
-      display: flex; align-items: center; gap: 6px;
-      padding: 5px 12px; border-radius: 100px;
-      background: rgba(0,200,83,0.1); border: 1px solid rgba(0,200,83,0.2);
-      font-size: 0.72rem; font-weight: 600; color: var(--success);
-    }
-    .live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--success); animation: pulse-dot 1.5s ease-in-out infinite; }
-    @keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:0.3;transform:scale(0.6);} }
-
-    .header-right { display: flex; align-items: center; gap: 12px; }
-    .btn-clear {
-      padding: 7px 16px; border-radius: 8px;
-      border: 1px solid rgba(255,59,48,0.3);
-      background: rgba(255,59,48,0.06);
-      color: var(--danger); font-family: var(--font); font-size: 0.8rem;
-      font-weight: 600; cursor: pointer; transition: all 0.15s;
-    }
-    .btn-clear:hover { background: rgba(255,59,48,0.15); border-color: rgba(255,59,48,0.5); }
-    .nav-home { font-size: 0.8rem; color: var(--text-3); text-decoration: none; }
-    .nav-home:hover { color: var(--text-2); }
-
-    /* STATS STRIP */
-    .stats-strip {
-      display: grid; grid-template-columns: repeat(4, 1fr);
-      gap: 1px; background: var(--border);
       border-bottom: 1px solid var(--border);
-      flex-shrink: 0;
+      background: var(--surface);
+      position: sticky; top: 0; z-index: 10;
     }
-    .stat-cell {
-      background: var(--bg-2); padding: 16px 24px;
+    .logo { display: flex; align-items: center; gap: 0.65rem; text-decoration: none; color: var(--text); }
+    .logo-mark { width: 30px; height: 30px; background: var(--accent); border-radius: 7px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.7rem; color: #0a0a0f; }
+    .logo-text { font-weight: 600; font-size: 0.95rem; }
+    .logo-text span { color: var(--accent); }
+    .topbar-right { display: flex; align-items: center; gap: 1rem; }
+    .live-badge {
+      display: flex; align-items: center; gap: 0.4rem;
+      font-size: 0.72rem; font-weight: 600; color: var(--success);
+      letter-spacing: 0.05em;
     }
-    .stat-label { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-3); margin-bottom: 6px; }
-    .stat-value { font-size: 1.6rem; font-weight: 700; letter-spacing: -0.02em; }
-    .stat-sub { font-size: 0.72rem; color: var(--text-3); margin-top: 2px; }
-
-    /* CONTENT */
-    .content { display: flex; flex: 1; overflow: hidden; }
-
-    /* FEED */
-    .feed-pane {
-      flex: 1; overflow-y: auto; padding: 1.5rem;
-      display: flex; flex-direction: column; gap: 1rem;
+    .live-dot {
+      width: 7px; height: 7px; border-radius: 50%; background: var(--success);
+      animation: blink 1.4s ease-in-out infinite;
     }
-    .feed-pane::-webkit-scrollbar { width: 4px; }
-    .feed-pane::-webkit-scrollbar-track { background: transparent; }
-    .feed-pane::-webkit-scrollbar-thumb { background: var(--surface-2); border-radius: 4px; }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+    .clear-btn {
+      padding: 0.45rem 1rem;
+      background: rgba(255,59,48,0.12); border: 1px solid rgba(255,59,48,0.25);
+      color: var(--danger); border-radius: 8px;
+      font-family: 'DM Sans', sans-serif; font-size: 0.78rem; font-weight: 600;
+      cursor: pointer; transition: background 0.15s;
+    }
+    .clear-btn:hover { background: rgba(255,59,48,0.22); }
 
+    /* Layout */
+    .layout { display: flex; flex: 1; min-height: 0; }
+    .main { flex: 1; padding: 2rem; overflow-y: auto; max-width: 1200px; margin: 0 auto; width: 100%; }
+
+    /* Stats */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    @media (max-width: 768px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 480px) { .stats-grid { grid-template-columns: 1fr 1fr; } }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.25rem 1.5rem;
+      transition: border-color 0.2s;
+    }
+    .stat-card:hover { border-color: rgba(0,212,255,0.2); }
+    .stat-label { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.6rem; }
+    .stat-value { font-size: 2rem; font-weight: 700; letter-spacing: -0.02em; }
+    .stat-value.blue { color: var(--accent); }
+    .stat-value.yellow { color: var(--warning); }
+    .stat-value.red { color: var(--danger); }
+    .stat-value.green { color: var(--success); }
+
+    /* Feed */
     .feed-header {
       display: flex; align-items: center; justify-content: space-between;
-      padding-bottom: 4px;
+      margin-bottom: 1rem;
     }
-    .feed-title { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-3); }
+    .feed-title { font-size: 0.85rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
 
-    /* TX CARD */
-    .tx-card {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 16px; padding: 18px 20px;
-      transition: border-color 0.2s; position: relative; overflow: hidden;
-    }
-    .tx-card.flagged { border-color: rgba(255,176,32,0.3); animation: alert-pulse 2s ease-in-out infinite; }
-    .tx-card.blocked { border-color: rgba(255,59,48,0.25); }
-    .tx-card.confirmed, .tx-card.approved { border-color: rgba(0,200,83,0.25); }
+    .feed { display: flex; flex-direction: column; gap: 0.85rem; }
 
-    @keyframes alert-pulse {
-      0%,100% { box-shadow: 0 0 0 0 rgba(255,176,32,0); }
-      50% { box-shadow: 0 0 0 6px rgba(255,176,32,0.08); }
-    }
-
-    .tx-card-top {
-      display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 14px;
-    }
-    .tx-device { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-3); margin-bottom: 4px; }
-    .tx-merchant { font-weight: 700; font-size: 1.05rem; }
-    .tx-amount { font-size: 1.2rem; font-weight: 700; text-align: right; }
-    .tx-time { font-size: 0.7rem; color: var(--text-3); text-align: right; margin-top: 2px; }
-
-    .status-badge {
-      display: inline-flex; align-items: center; gap: 5px;
-      padding: 3px 10px; border-radius: 100px;
-      font-size: 0.7rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
-    }
-    .badge-approved, .badge-confirmed {
-      background: var(--success-glow); border: 1px solid rgba(0,200,83,0.25); color: var(--success);
-    }
-    .badge-flagged {
-      background: var(--warning-glow); border: 1px solid rgba(255,176,32,0.25); color: var(--warning);
-    }
-    .badge-blocked {
-      background: var(--danger-glow); border: 1px solid rgba(255,59,48,0.25); color: var(--danger);
-    }
-    .badge-processing {
-      background: var(--accent-glow); border: 1px solid rgba(0,212,255,0.2); color: var(--accent);
-    }
-
-    /* FRAUD SCORE BAR */
-    .score-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
-    .score-label { font-size: 0.72rem; color: var(--text-3); width: 80px; flex-shrink: 0; }
-    .score-track {
-      flex: 1; height: 5px; border-radius: 100px;
-      background: var(--surface-2); overflow: hidden;
-    }
-    .score-fill { height: 100%; border-radius: 100px; transition: width 0.6s ease; }
-    .score-val { font-size: 0.75rem; font-weight: 700; width: 36px; text-align: right; flex-shrink: 0; }
-
-    /* META GRID */
-    .meta-grid {
-      display: grid; grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-    }
-    .meta-item { background: var(--bg-3); border-radius: 8px; padding: 8px 12px; }
-    .meta-key { font-size: 0.62rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-3); margin-bottom: 3px; }
-    .meta-val { font-size: 0.78rem; color: var(--text-2); font-family: monospace; word-break: break-all; }
-
-    /* EMPTY STATE */
     .empty-state {
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      padding: 80px 24px; text-align: center; gap: 12px;
-      color: var(--text-3);
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; padding: 5rem 2rem;
+      text-align: center; color: var(--muted);
+      border: 1px dashed var(--border); border-radius: 16px;
     }
-    .empty-icon { font-size: 2.5rem; margin-bottom: 8px; opacity: 0.4; }
-    .empty-title { font-size: 0.95rem; font-weight: 600; }
-    .empty-sub { font-size: 0.82rem; }
+    .empty-state-icon { font-size: 3rem; margin-bottom: 1rem; opacity: 0.4; }
+    .empty-state p { font-size: 0.9rem; line-height: 1.6; }
+    .empty-state strong { color: var(--text); }
 
-    /* SIDE PANEL (alert detail) */
-    .alert-banner {
-      position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 500;
-      max-width: 340px; width: 100%;
-      background: var(--surface); border: 1px solid rgba(255,176,32,0.4);
-      border-radius: 16px; padding: 18px 20px;
-      box-shadow: 0 16px 48px rgba(0,0,0,0.6);
-      animation: slide-in 0.3s ease-out;
-      display: none;
+    /* Transaction card */
+    .tx-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.25rem 1.5rem;
+      animation: slideIn 0.3s ease;
+      transition: border-color 0.2s;
     }
-    @keyframes slide-in { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-    .alert-banner.visible { display: block; }
-    .alert-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
-    .alert-top-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--warning); }
-    .alert-close { background: none; border: none; color: var(--text-3); cursor: pointer; font-size: 1.1rem; }
-    .alert-text { font-size: 0.875rem; color: var(--text-2); line-height: 1.5; }
+    .tx-card:hover { border-color: rgba(255,255,255,0.12); }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
 
-    @media(max-width:768px) {
-      .stats-strip { grid-template-columns: repeat(2,1fr); }
-      .meta-grid { grid-template-columns: repeat(2,1fr); }
+    .tx-top {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      margin-bottom: 1rem; gap: 1rem;
+    }
+    .tx-left { display: flex; align-items: center; gap: 0.85rem; }
+    .tx-device-icon {
+      width: 38px; height: 38px; border-radius: 10px;
+      background: var(--surface2); display: flex; align-items: center;
+      justify-content: center; font-size: 1.1rem; flex-shrink: 0;
+    }
+    .tx-device { font-size: 0.78rem; color: var(--muted); margin-bottom: 0.15rem; }
+    .tx-cardholder { font-size: 0.9rem; font-weight: 600; }
+    .tx-card-num { font-size: 0.73rem; color: var(--muted); }
+
+    /* Status badge */
+    .badge {
+      font-size: 0.68rem; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase;
+      padding: 0.25rem 0.7rem; border-radius: 100px; white-space: nowrap; flex-shrink: 0;
+    }
+    .badge-approved { background: rgba(0,200,83,0.15); color: var(--success); border: 1px solid rgba(0,200,83,0.25); }
+    .badge-flagged { background: rgba(255,176,32,0.15); color: var(--warning); border: 1px solid rgba(255,176,32,0.25); }
+    .badge-confirmed { background: rgba(0,200,83,0.15); color: var(--success); border: 1px solid rgba(0,200,83,0.3); }
+    .badge-blocked { background: rgba(255,59,48,0.15); color: var(--danger); border: 1px solid rgba(255,59,48,0.25); }
+
+    .tx-amount-row {
+      display: flex; align-items: baseline; justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+    .tx-amount { font-size: 1.35rem; font-weight: 700; letter-spacing: -0.01em; }
+    .tx-merchant { font-size: 0.8rem; color: var(--muted); }
+
+    /* Score bar */
+    .score-row { margin-bottom: 1rem; }
+    .score-label-row {
+      display: flex; justify-content: space-between;
+      font-size: 0.7rem; color: var(--muted); margin-bottom: 0.35rem;
+    }
+    .score-val { font-weight: 600; }
+    .score-track {
+      height: 5px; background: var(--surface2); border-radius: 100px; overflow: hidden;
+    }
+    .score-fill {
+      height: 100%; border-radius: 100px;
+      transition: width 0.5s ease;
+    }
+    .score-fill.high { background: var(--danger); }
+    .score-fill.low { background: var(--success); }
+
+    /* Meta grid */
+    .tx-meta {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem;
+    }
+    @media (max-width: 600px) { .tx-meta { grid-template-columns: 1fr 1fr; } }
+    .meta-item { }
+    .meta-key { font-size: 0.65rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 0.2rem; }
+    .meta-val { font-size: 0.75rem; color: var(--text); font-family: monospace; }
+
+    .tx-footer {
+      display: flex; justify-content: flex-end;
+      margin-top: 0.85rem; padding-top: 0.85rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.7rem; color: var(--muted);
     }
   </style>
 </head>
 <body>
-
-<header>
-  <div class="header-left">
-    <a class="logo" href="index.html">FG</a>
-    <div>
-      <div class="header-title">FraudGuard Operations</div>
-      <div class="header-sub">Bank Fraud Intelligence Dashboard</div>
+  <header class="topbar">
+    <a class="logo" href="index.html">
+      <div class="logo-mark">FG</div>
+      <span class="logo-text"><span>Fraud</span>Guard</span>
+    </a>
+    <div class="topbar-right">
+      <div class="live-badge"><div class="live-dot"></div>LIVE</div>
+      <button class="clear-btn" onclick="clearAll()">Clear All</button>
     </div>
-    <div class="live-badge">
-      <div class="live-dot"></div>
-      LIVE
-    </div>
+  </header>
+
+  <div class="layout">
+    <main class="main">
+      <!-- Stats -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Total Transactions</div>
+          <div class="stat-value blue" id="statTotal">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Flagged</div>
+          <div class="stat-value yellow" id="statFlagged">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Blocked</div>
+          <div class="stat-value red" id="statBlocked">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Approval Rate</div>
+          <div class="stat-value green" id="statApproval">—</div>
+        </div>
+      </div>
+
+      <!-- Feed -->
+      <div class="feed-header">
+        <span class="feed-title">Transaction Feed</span>
+      </div>
+
+      <div id="feed">
+        <div class="empty-state" id="emptyState">
+          <div class="empty-state-icon">📡</div>
+          <p><strong>Waiting for transactions…</strong><br />
+          Open the device tabs and click Pay to see live updates here.</p>
+        </div>
+      </div>
+    </main>
   </div>
-  <div class="header-right">
-    <a class="nav-home" href="index.html">← Home</a>
-    <button class="btn-clear" onclick="clearAll()">Clear All Transactions</button>
-  </div>
-</header>
 
-<div class="stats-strip">
-  <div class="stat-cell">
-    <div class="stat-label">Total Transactions</div>
-    <div class="stat-value" id="statTotal" style="color:var(--accent)">0</div>
-    <div class="stat-sub">All time</div>
-  </div>
-  <div class="stat-cell">
-    <div class="stat-label">Flagged</div>
-    <div class="stat-value" id="statFlagged" style="color:var(--warning)">0</div>
-    <div class="stat-sub">Above threshold 0.682</div>
-  </div>
-  <div class="stat-cell">
-    <div class="stat-label">Blocked / Fraud</div>
-    <div class="stat-value" id="statBlocked" style="color:var(--danger)">0</div>
-    <div class="stat-sub">Confirmed fraud</div>
-  </div>
-  <div class="stat-cell">
-    <div class="stat-label">Approval Rate</div>
-    <div class="stat-value" id="statApproval" style="color:var(--success)">—</div>
-    <div class="stat-sub">Approved / total</div>
-  </div>
-</div>
+  <script>
+    const channel = new BroadcastChannel('fraudguard');
+    const transactions = new Map(); // txId → { tx, cardEl }
 
-<div class="content">
-  <div class="feed-pane" id="feed">
-    <div class="feed-header">
-      <div class="feed-title">Live Transaction Feed</div>
-      <div style="font-size:0.72rem;color:var(--text-3);">Updates in real time via Supabase</div>
-    </div>
-    <div class="empty-state" id="emptyState">
-      <div class="empty-icon">📡</div>
-      <div class="empty-title">Listening for fg_events</div>
-      <div class="empty-sub">Open Device 1, 2, or 3 and click Pay to see fg_events appear here.</div>
-    </div>
-  </div>
-</div>
+    function getDeviceIcon(device_id) {
+      const icons = {
+        'owner-main': '📱',
+        'fraudster': '🕵️',
+        'owner-secondary': '💳'
+      };
+      return icons[device_id] || '📟';
+    }
 
-<!-- Alert banner -->
-<div class="alert-banner" id="alertBanner">
-  <div class="alert-top">
-    <div class="alert-top-label">🚨 Fraud Alert</div>
-    <button class="alert-close" onclick="document.getElementById('alertBanner').classList.remove('visible')">×</button>
-  </div>
-  <div class="alert-text" id="alertText"></div>
-</div>
+    function formatAmount(n) {
+      return '₦' + n.toLocaleString('en-NG');
+    }
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script>
-  const SUPABASE_URL = 'https://gpawjbioxlqigtvtnmpf.supabase.co';
-  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdwYXdqYmlveGxxaWd0dnRubXBmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQyMDQ2MDMsImV4cCI6MjA5OTc4MDYwM30.8d9OiIRK-kj9YZgC77hXHCcv-dIhRpan7-ku9gKblaQ';
-  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    function formatTime(iso) {
+      const d = new Date(iso);
+      return d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    }
 
-  const txMap = {}; // id → card element
+    function badgeClass(status) {
+      const map = {
+        approved: 'badge-approved',
+        flagged: 'badge-flagged',
+        confirmed: 'badge-confirmed',
+        blocked: 'badge-blocked'
+      };
+      return map[status] || 'badge-flagged';
+    }
 
-  function fmtTime(ts) {
-    if (!ts) return '—';
-    const d = new Date(ts);
-    return d.toLocaleTimeString('en-GB', { hour12: false });
-  }
-  function fmtCurrency(n) {
-    return '₦' + Number(n).toLocaleString('en-NG');
-  }
+    function badgeLabel(status) {
+      const map = {
+        approved: '✓ Approved',
+        flagged: '⚡ Flagged',
+        confirmed: '✓ Confirmed',
+        blocked: '✗ Blocked'
+      };
+      return map[status] || status;
+    }
 
-  function scoreColor(s) {
-    if (s < 0.4) return 'var(--success)';
-    if (s < 0.682) return 'var(--warning)';
-    return 'var(--danger)';
-  }
-  function scoreBg(s) {
-    if (s < 0.4) return 'var(--success-glow)';
-    if (s < 0.682) return 'var(--warning-glow)';
-    return 'var(--danger-glow)';
-  }
+    function buildCard(tx) {
+      const card = document.createElement('div');
+      card.className = 'tx-card';
+      card.id = `card-${tx.id}`;
+      const isHigh = tx.fraud_score >= 0.68;
 
-  function badgeClass(status) {
-    if (['approved','confirmed'].includes(status)) return 'badge-approved';
-    if (status === 'flagged') return 'badge-flagged';
-    if (status === 'blocked') return 'badge-blocked';
-    return 'badge-processing';
-  }
+      card.innerHTML = `
+        <div class="tx-top">
+          <div class="tx-left">
+            <div class="tx-device-icon">${getDeviceIcon(tx.device_id)}</div>
+            <div>
+              <div class="tx-device">${tx.device_label}</div>
+              <div class="tx-cardholder">${tx.cardholder}</div>
+              <div class="tx-card-num">Card ••••4829</div>
+            </div>
+          </div>
+          <span class="badge ${badgeClass(tx.status)}" id="badge-${tx.id}">${badgeLabel(tx.status)}</span>
+        </div>
 
-  function badgeLabel(status) {
-    const map = { approved:'Approved', confirmed:'Confirmed', flagged:'Flagged', blocked:'Blocked', processing:'Processing' };
-    return map[status] || status;
-  }
+        <div class="tx-amount-row">
+          <span class="tx-amount">${formatAmount(tx.amount)}</span>
+          <span class="tx-merchant">${tx.merchant}</span>
+        </div>
 
-  function deviceIcon(id) {
-    if (id === 'owner-main') return '💳';
-    if (id === 'fraudster') return '🚨';
-    if (id === 'owner-secondary') return '📱';
-    return '❓';
-  }
-
-  function buildCard(tx) {
-    const score = parseFloat(tx.fraud_score || 0);
-    const pct = Math.round(score * 100);
-    const card = document.createElement('div');
-    card.className = `tx-card ${tx.status}`;
-    card.id = 'tx-' + tx.id;
-    card.innerHTML = `
-      <div class="tx-card-top">
-        <div>
-          <div class="tx-device">${deviceIcon(tx.device_id)} ${tx.device_label || tx.device_id}</div>
-          <div class="tx-merchant">${tx.merchant} <span style="font-weight:400;color:var(--text-2);font-size:0.85em;">· ····${'4829'}</span></div>
-          <div style="margin-top:6px;">
-            <span class="status-badge ${badgeClass(tx.status)}" id="badge-${tx.id}">${badgeLabel(tx.status)}</span>
-            ${tx.owner_response ? `<span style="font-size:0.7rem;color:var(--text-3);margin-left:8px;">Owner: ${tx.owner_response}</span>` : ''}
+        <div class="score-row">
+          <div class="score-label-row">
+            <span>Fraud Score</span>
+            <span class="score-val" id="scoreVal-${tx.id}">${tx.fraud_score.toFixed(4)}</span>
+          </div>
+          <div class="score-track">
+            <div class="score-fill ${isHigh ? 'high' : 'low'}" style="width: ${(tx.fraud_score * 100).toFixed(1)}%"></div>
           </div>
         </div>
-        <div>
-          <div class="tx-amount">${fmtCurrency(tx.amount)}</div>
-          <div class="tx-time">${fmtTime(tx.created_at)}</div>
-        </div>
-      </div>
-      <div class="score-row">
-        <div class="score-label">Fraud Score</div>
-        <div class="score-track">
-          <div class="score-fill" style="width:${pct}%;background:${scoreColor(score)};"></div>
-        </div>
-        <div class="score-val" style="color:${scoreColor(score)}">${score.toFixed(3)}</div>
-      </div>
-      <div class="meta-grid">
-        <div class="meta-item"><div class="meta-key">Cardholder</div><div class="meta-val">${tx.cardholder}</div></div>
-        <div class="meta-item"><div class="meta-key">IP Address</div><div class="meta-val">${tx.ip_address || '—'}</div></div>
-        <div class="meta-item"><div class="meta-key">Location</div><div class="meta-val">${tx.location || '—'}</div></div>
-        <div class="meta-item"><div class="meta-key">Fingerprint</div><div class="meta-val">${tx.device_fingerprint || '—'}</div></div>
-        <div class="meta-item"><div class="meta-key">Status</div><div class="meta-val" id="meta-status-${tx.id}">${tx.status}</div></div>
-        <div class="meta-item"><div class="meta-key">Resolved</div><div class="meta-val" id="meta-resolved-${tx.id}">${tx.resolved_at ? fmtTime(tx.resolved_at) : 'Pending…'}</div></div>
-      </div>
-    `;
-    return card;
-  }
 
-  function updateCard(tx) {
-    const card = txMap[tx.id];
-    if (!card) return;
-    // Update class
-    card.className = `tx-card ${tx.status}`;
-    // Update badge
-    const badge = document.getElementById('badge-' + tx.id);
-    if (badge) { badge.className = `status-badge ${badgeClass(tx.status)}`; badge.textContent = badgeLabel(tx.status); }
-    // Update meta
-    const ms = document.getElementById('meta-status-' + tx.id);
-    if (ms) ms.textContent = tx.status;
-    const mr = document.getElementById('meta-resolved-' + tx.id);
-    if (mr) mr.textContent = tx.resolved_at ? fmtTime(tx.resolved_at) : 'Pending…';
-    // Bring flagged to top
-    if (tx.status === 'flagged') {
-      const feed = document.getElementById('feed');
-      const feedHeader = feed.querySelector('.feed-header');
-      feed.insertBefore(card, feedHeader.nextSibling);
+        <div class="tx-meta">
+          <div class="meta-item">
+            <div class="meta-key">IP Address</div>
+            <div class="meta-val">${tx.ip_address}</div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-key">Location</div>
+            <div class="meta-val">${tx.location}</div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-key">Device FP</div>
+            <div class="meta-val">${tx.device_fingerprint}</div>
+          </div>
+        </div>
+
+        <div class="tx-footer">
+          <span>${formatTime(tx.timestamp)}</span>
+        </div>
+      `;
+      return card;
     }
-  }
 
-  function updateStats(txs) {
-    const total = txs.length;
-    const flagged = txs.filter(t => t.status === 'flagged').length;
-    const blocked = txs.filter(t => t.status === 'blocked').length;
-    const approved = txs.filter(t => ['approved','confirmed'].includes(t.status)).length;
-    const rate = total > 0 ? Math.round((approved / total) * 100) : null;
-    document.getElementById('statTotal').textContent = total;
-    document.getElementById('statFlagged').textContent = flagged;
-    document.getElementById('statBlocked').textContent = blocked;
-    document.getElementById('statApproval').textContent = rate !== null ? rate + '%' : '—';
-  }
+    function updateStats() {
+      const all = [...transactions.values()].map(v => v.tx);
+      const total = all.length;
+      const flagged = all.filter(t => t.status === 'flagged').length;
+      const blocked = all.filter(t => t.status === 'blocked').length;
+      const approved = all.filter(t => t.status === 'approved' || t.status === 'confirmed').length;
+      const rate = total > 0 ? Math.round((approved / total) * 100) + '%' : '—';
 
-  function showAlert(tx) {
-    document.getElementById('alertText').innerHTML =
-      `<strong style="color:var(--warning)">${tx.device_label}</strong> — ${fmtCurrency(tx.amount)} at ${tx.merchant}<br>
-       Fraud score: <strong style="color:var(--danger)">${parseFloat(tx.fraud_score).toFixed(3)}</strong> · Status: <strong>${tx.status}</strong>`;
-    document.getElementById('alertBanner').classList.add('visible');
-    setTimeout(() => document.getElementById('alertBanner').classList.remove('visible'), 8000);
-  }
+      document.getElementById('statTotal').textContent = total;
+      document.getElementById('statFlagged').textContent = flagged;
+      document.getElementById('statBlocked').textContent = blocked;
+      document.getElementById('statApproval').textContent = rate;
+    }
 
-  async function loadAll() {
-    const { data } = await sb.from('fg_events').select('*').order('created_at', { ascending: false });
-    if (!data) return;
-    data.reverse().forEach(addTx);
-    updateStats(data);
-    // After load, show newest flagged on top
-    data.filter(t => t.status === 'flagged').forEach(t => {
-      const c = txMap[t.id];
-      if (c) {
-        const feed = document.getElementById('feed');
-        feed.insertBefore(c, document.querySelector('.feed-header').nextSibling);
+    function addTransaction(tx) {
+      const emptyState = document.getElementById('emptyState');
+      if (emptyState) emptyState.remove();
+
+      const card = buildCard(tx);
+      const feed = document.getElementById('feed');
+      feed.insertBefore(card, feed.firstChild);
+      transactions.set(tx.id, { tx, card });
+      updateStats();
+    }
+
+    function updateTransaction(txId, status, ownerResponse) {
+      const entry = transactions.get(txId);
+      if (!entry) return;
+
+      entry.tx.status = status;
+
+      const badge = document.getElementById(`badge-${txId}`);
+      if (badge) {
+        badge.className = `badge ${badgeClass(status)}`;
+        badge.textContent = badgeLabel(status);
       }
-    });
-  }
 
-  function addTx(tx) {
-    const empty = document.getElementById('emptyState');
-    if (empty) empty.style.display = 'none';
-    const card = buildCard(tx);
-    txMap[tx.id] = card;
-    const feed = document.getElementById('feed');
-    const header = feed.querySelector('.feed-header');
-    feed.insertBefore(card, header.nextSibling);
-    if (tx.status === 'flagged') showAlert(tx);
-  }
+      // Pulse the card to highlight the update
+      entry.card.style.transition = 'border-color 0.15s';
+      const borderColor = status === 'blocked' ? 'rgba(255,59,48,0.4)' :
+                          status === 'confirmed' ? 'rgba(0,200,83,0.4)' : 'rgba(0,212,255,0.3)';
+      entry.card.style.borderColor = borderColor;
+      setTimeout(() => { entry.card.style.borderColor = ''; }, 1500);
 
-  // Subscribe to inserts and updates
-  sb.channel('dashboard-feed')
-    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'fg_events' }, payload => {
-      const tx = payload.new;
-      if (txMap[tx.id]) return; // already there
-      addTx(tx);
-      recomputeStats();
-    })
-    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'fg_events' }, payload => {
-      const tx = payload.new;
-      if (!txMap[tx.id]) { addTx(tx); } else { updateCard(tx); }
-      recomputeStats();
-    })
-    .subscribe();
+      updateStats();
+    }
 
-  async function recomputeStats() {
-    const { data } = await sb.from('fg_events').select('status');
-    if (data) updateStats(data);
-  }
+    function clearAll() {
+      channel.postMessage({ type: 'reset-all' });
+      wipeLocal();
+    }
 
-  async function clearAll() {
-    if (!confirm('Delete all fg_events? This cannot be undone.')) return;
-    await sb.from('fg_events').delete().neq('id', '00000000-0000-0000-0000-000000000000');
-    // Clear DOM
-    Object.keys(txMap).forEach(id => { txMap[id].remove(); delete txMap[id]; });
-    document.getElementById('emptyState').style.display = '';
-    updateStats([]);
-  }
+    function wipeLocal() {
+      transactions.clear();
+      const feed = document.getElementById('feed');
+      feed.innerHTML = `
+        <div class="empty-state" id="emptyState">
+          <div class="empty-state-icon">📡</div>
+          <p><strong>Waiting for transactions…</strong><br />
+          Open the device tabs and click Pay to see live updates here.</p>
+        </div>
+      `;
+      updateStats();
+    }
 
-  loadAll();
-</script>
+    channel.onmessage = (e) => {
+      const { type } = e.data;
+      if (type === 'tx-new') {
+        addTransaction(e.data.tx);
+      }
+      if (type === 'tx-update') {
+        updateTransaction(e.data.txId, e.data.status, e.data.owner_response);
+      }
+      if (type === 'reset-all') {
+        wipeLocal();
+      }
+    };
+  </script>
 </body>
 </html>
