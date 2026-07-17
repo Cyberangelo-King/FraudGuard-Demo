@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FraudGuard — Admin Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #07070d; --bg-2: #0d0d18; --bg-3: #12121e;
+      --surface: #181828; --surface-2: #1e1e32;
+      --border: rgba(255,255,255,0.07); --border-2: rgba(255,255,255,0.11);
+      --accent: #00d4ff; --accent-glow: rgba(0,212,255,0.12);
+      --success: #00c853; --success-glow: rgba(0,200,83,0.12);
+      --danger: #ff3b30; --danger-glow: rgba(255,59,48,0.12);
+      --warning: #ffb020; --warning-glow: rgba(255,176,32,0.12);
+      --text: #f0f0f8; --text-2: #9898b8; --text-3: #5c5c80;
+      --font: 'DM Sans', -apple-system, sans-serif;
+      --radius: 12px;
+    }
+    html { font-size: 15px; }
+    body { background: var(--bg); color: var(--text); font-family: var(--font); min-height: 100vh; display: flex; flex-direction: column; }
+
+    /* TOP BAR */
+    header {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(7,7,13,0.92); backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 60px; flex-shrink: 0;
+    }
+    .header-left { display: flex; align-items: center; gap: 14px; }
+    .logo { width: 30px; height: 30px; border-radius: 8px;
+      background: linear-gradient(135deg, #00d4ff, #0080ff);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 12px; color: #000; text-decoration: none; }
+    .header-title { font-weight: 700; font-size: 0.95rem; letter-spacing: -0.01em; }
+    .header-sub { font-size: 0.72rem; color: var(--text-3); }
+    .live-badge {
+      display: flex; align-items: center; gap: 6px;
+      padding: 5px 12px; border-radius: 100px;
+      background: rgba(0,200,83,0.1); border: 1px solid rgba(0,200,83,0.2);
+      font-size: 0.72rem; font-weight: 600; color: var(--success);
+    }
+    .live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--success); animation: pulse-dot 1.5s ease-in-out infinite; }
+    @keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:0.3;transform:scale(0.6);} }
+
+    .header-right { display: flex; align-items: center; gap: 12px; }
+    .btn-clear {
+      padding: 7px 16px; border-radius: 8px;
+      border: 1px solid rgba(255,59,48,0.3);
+      background: rgba(255,59,48,0.06);
+      color: var(--danger); font-family: var(--font); font-size: 0.8rem;
+      font-weight: 600; cursor: pointer; transition: all 0.15s;
+    }
+    .btn-clear:hover { background: rgba(255,59,48,0.15); border-color: rgba(255,59,48,0.5); }
+    .nav-home { font-size: 0.8rem; color: var(--text-3); text-decoration: none; }
+    .nav-home:hover { color: var(--text-2); }
+
+    /* STATS STRIP */
+    .stats-strip {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 1px; background: var(--border);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .stat-cell {
+      background: var(--bg-2); padding: 16px 24px;
+    }
+    .stat-label { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-3); margin-bottom: 6px; }
+    .stat-value { font-size: 1.6rem; font-weight: 700; letter-spacing: -0.02em; }
+    .stat-sub { font-size: 0.72rem; color: var(--text-3); margin-top: 2px; }
+
+    /* CONTENT */
+    .content { display: flex; flex: 1; overflow: hidden; }
+
+    /* FEED */
+    .feed-pane {
+      flex: 1; overflow-y: auto; padding: 1.5rem;
+      display: flex; flex-direction: column; gap: 1rem;
+    }
+    .feed-pane::-webkit-scrollbar { width: 4px; }
+    .feed-pane::-webkit-scrollbar-track { background: transparent; }
+    .feed-pane::-webkit-scrollbar-thumb { background: var(--surface-2); border-radius: 4px; }
+
+    .feed-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding-bottom: 4px;
+    }
+    .feed-title { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-3); }
+
+    /* TX CARD */
+    .tx-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 16px; padding: 18px 20px;
+      transition: border-color 0.2s; position: relative; overflow: hidden;
+    }
+    .tx-card.flagged { border-color: rgba(255,176,32,0.3); animation: alert-pulse 2s ease-in-out infinite; }
+    .tx-card.blocked { border-color: rgba(255,59,48,0.25); }
+    .tx-card.confirmed, .tx-card.approved { border-color: rgba(0,200,83,0.25); }
+
+    @keyframes alert-pulse {
+      0%,100% { box-shadow: 0 0 0 0 rgba(255,176,32,0); }
+      50% { box-shadow: 0 0 0 6px rgba(255,176,32,0.08); }
+    }
+
+    .tx-card-top {
+      display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 14px;
+    }
+    .tx-device { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-3); margin-bottom: 4px; }
+    .tx-merchant { font-weight: 700; font-size: 1.05rem; }
+    .tx-amount { font-size: 1.2rem; font-weight: 700; text-align: right; }
+    .tx-time { font-size: 0.7rem; color: var(--text-3); text-align: right; margin-top: 2px; }
+
+    .status-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 3px 10px; border-radius: 100px;
+      font-size: 0.7rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+    }
+    .badge-approved, .badge-confirmed {
+      background: var(--success-glow); border: 1px solid rgba(0,200,83,0.25); color: var(--success);
+    }
+    .badge-flagged {
+      background: var(--warning-glow); border: 1px solid rgba(255,176,32,0.25); color: var(--warning);
+    }
+    .badge-blocked {
+      background: var(--danger-glow); border: 1px solid rgba(255,59,48,0.25); color: var(--danger);
+    }
+    .badge-processing {
+      background: var(--accent-glow); border: 1px solid rgba(0,212,255,0.2); color: var(--accent);
+    }
+
+    /* FRAUD SCORE BAR */
+    .score-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .score-label { font-size: 0.72rem; color: var(--text-3); width: 80px; flex-shrink: 0; }
+    .score-track {
+      flex: 1; height: 5px; border-radius: 100px;
+      background: var(--surface-2); overflow: hidden;
+    }
+    .score-fill { height: 100%; border-radius: 100px; transition: width 0.6s ease; }
+    .score-val { font-size: 0.75rem; font-weight: 700; width: 36px; text-align: right; flex-shrink: 0; }
+
+    /* META GRID */
+    .meta-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+    .meta-item { background: var(--bg-3); border-radius: 8px; padding: 8px 12px; }
+    .meta-key { font-size: 0.62rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-3); margin-bottom: 3px; }
+    .meta-val { font-size: 0.78rem; color: var(--text-2); font-family: monospace; word-break: break-all; }
+
+    /* EMPTY STATE */
+    .empty-state {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 80px 24px; text-align: center; gap: 12px;
+      color: var(--text-3);
+    }
+    .empty-icon { font-size: 2.5rem; margin-bottom: 8px; opacity: 0.4; }
+    .empty-title { font-size: 0.95rem; font-weight: 600; }
+    .empty-sub { font-size: 0.82rem; }
+
+    /* SIDE PANEL (alert detail) */
+    .alert-banner {
+      position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 500;
+      max-width: 340px; width: 100%;
+      background: var(--surface); border: 1px solid rgba(255,176,32,0.4);
+      border-radius: 16px; padding: 18px 20px;
+      box-shadow: 0 16px 48px rgba(0,0,0,0.6);
+      animation: slide-in 0.3s ease-out;
+      display: none;
+    }
+    @keyframes slide-in { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    .alert-banner.visible { display: block; }
+    .alert-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .alert-top-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--warning); }
+    .alert-close { background: none; border: none; color: var(--text-3); cursor: pointer; font-size: 1.1rem; }
+    .alert-text { font-size: 0.875rem; color: var(--text-2); line-height: 1.5; }
+
+    @media(max-width:768px) {
+      .stats-strip { grid-template-columns: repeat(2,1fr); }
+      .meta-grid { grid-template-columns: repeat(2,1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <a class="logo" href="index.html">FG</a>
+    <div>
+      <div class="header-title">FraudGuard Operations</div>
+      <div class="header-sub">Bank Fraud Intelligence Dashboard</div>
+    </div>
+    <div class="live-badge">
+      <div class="live-dot"></div>
+      LIVE
+    </div>
+  </div>
+  <div class="header-right">
+    <a class="nav-home" href="index.html">← Home</a>
+    <button class="btn-clear" onclick="clearAll()">Clear All Transactions</button>
+  </div>
+</header>
+
+<div class="stats-strip">
+  <div class="stat-cell">
+    <div class="stat-label">Total Transactions</div>
+    <div class="stat-value" id="statTotal" style="color:var(--accent)">0</div>
+    <div class="stat-sub">All time</div>
+  </div>
+  <div class="stat-cell">
+    <div class="stat-label">Flagged</div>
+    <div class="stat-value" id="statFlagged" style="color:var(--warning)">0</div>
+    <div class="stat-sub">Above threshold 0.682</div>
+  </div>
+  <div class="stat-cell">
+    <div class="stat-label">Blocked / Fraud</div>
+    <div class="stat-value" id="statBlocked" style="color:var(--danger)">0</div>
+    <div class="stat-sub">Confirmed fraud</div>
+  </div>
+  <div class="stat-cell">
+    <div class="stat-label">Approval Rate</div>
+    <div class="stat-value" id="statApproval" style="color:var(--success)">—</div>
+    <div class="stat-sub">Approved / total</div>
+  </div>
+</div>
+
+<div class="content">
+  <div class="feed-pane" id="feed">
+    <div class="feed-header">
+      <div class="feed-title">Live Transaction Feed</div>
+      <div style="font-size:0.72rem;color:var(--text-3);">Updates in real time via Supabase</div>
+    </div>
+    <div class="empty-state" id="emptyState">
+      <div class="empty-icon">📡</div>
+      <div class="empty-title">Listening for transactions</div>
+      <div class="empty-sub">Open Device 1, 2, or 3 and click Pay to see transactions appear here.</div>
+    </div>
+  </div>
+</div>
+
+<!-- Alert banner -->
+<div class="alert-banner" id="alertBanner">
+  <div class="alert-top">
+    <div class="alert-top-label">🚨 Fraud Alert</div>
+    <button class="alert-close" onclick="document.getElementById('alertBanner').classList.remove('visible')">×</button>
+  </div>
+  <div class="alert-text" id="alertText"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+  const SUPABASE_URL = 'https://gpawjbioxlqigtvtnmpf.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdwYXdqYmlveGxxaWd0dnRubXBmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQyMDQ2MDMsImV4cCI6MjA5OTc4MDYwM30.8d9OiIRK-kj9YZgC77hXHCcv-dIhRpan7-ku9gKblaQ';
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  const txMap = {}; // id → card element
+
+  function fmtTime(ts) {
+    if (!ts) return '—';
+    const d = new Date(ts);
+    return d.toLocaleTimeString('en-GB', { hour12: false });
+  }
+  function fmtCurrency(n) {
+    return '₦' + Number(n).toLocaleString('en-NG');
+  }
+
+  function scoreColor(s) {
+    if (s < 0.4) return 'var(--success)';
+    if (s < 0.682) return 'var(--warning)';
+    return 'var(--danger)';
+  }
+  function scoreBg(s) {
+    if (s < 0.4) return 'var(--success-glow)';
+    if (s < 0.682) return 'var(--warning-glow)';
+    return 'var(--danger-glow)';
+  }
+
+  function badgeClass(status) {
+    if (['approved','confirmed'].includes(status)) return 'badge-approved';
+    if (status === 'flagged') return 'badge-flagged';
+    if (status === 'blocked') return 'badge-blocked';
+    return 'badge-processing';
+  }
+
+  function badgeLabel(status) {
+    const map = { approved:'Approved', confirmed:'Confirmed', flagged:'Flagged', blocked:'Blocked', processing:'Processing' };
+    return map[status] || status;
+  }
+
+  function deviceIcon(id) {
+    if (id === 'owner-main') return '💳';
+    if (id === 'fraudster') return '🚨';
+    if (id === 'owner-secondary') return '📱';
+    return '❓';
+  }
+
+  function buildCard(tx) {
+    const score = parseFloat(tx.fraud_score || 0);
+    const pct = Math.round(score * 100);
+    const card = document.createElement('div');
+    card.className = `tx-card ${tx.status}`;
+    card.id = 'tx-' + tx.id;
+    card.innerHTML = `
+      <div class="tx-card-top">
+        <div>
+          <div class="tx-device">${deviceIcon(tx.device_id)} ${tx.device_label || tx.device_id}</div>
+          <div class="tx-merchant">${tx.merchant} <span style="font-weight:400;color:var(--text-2);font-size:0.85em;">· ····${tx.card_last4}</span></div>
+          <div style="margin-top:6px;">
+            <span class="status-badge ${badgeClass(tx.status)}" id="badge-${tx.id}">${badgeLabel(tx.status)}</span>
+            ${tx.owner_response ? `<span style="font-size:0.7rem;color:var(--text-3);margin-left:8px;">Owner: ${tx.owner_response}</span>` : ''}
+          </div>
+        </div>
+        <div>
+          <div class="tx-amount">${fmtCurrency(tx.amount)}</div>
+          <div class="tx-time">${fmtTime(tx.created_at)}</div>
+        </div>
+      </div>
+      <div class="score-row">
+        <div class="score-label">Fraud Score</div>
+        <div class="score-track">
+          <div class="score-fill" style="width:${pct}%;background:${scoreColor(score)};"></div>
+        </div>
+        <div class="score-val" style="color:${scoreColor(score)}">${score.toFixed(3)}</div>
+      </div>
+      <div class="meta-grid">
+        <div class="meta-item"><div class="meta-key">Cardholder</div><div class="meta-val">${tx.cardholder}</div></div>
+        <div class="meta-item"><div class="meta-key">IP Address</div><div class="meta-val">${tx.ip_address || '—'}</div></div>
+        <div class="meta-item"><div class="meta-key">Location</div><div class="meta-val">${tx.location || '—'}</div></div>
+        <div class="meta-item"><div class="meta-key">Fingerprint</div><div class="meta-val">${tx.device_fingerprint || '—'}</div></div>
+        <div class="meta-item"><div class="meta-key">Status</div><div class="meta-val" id="meta-status-${tx.id}">${tx.status}</div></div>
+        <div class="meta-item"><div class="meta-key">Resolved</div><div class="meta-val" id="meta-resolved-${tx.id}">${tx.resolved_at ? fmtTime(tx.resolved_at) : 'Pending…'}</div></div>
+      </div>
+    `;
+    return card;
+  }
+
+  function updateCard(tx) {
+    const card = txMap[tx.id];
+    if (!card) return;
+    // Update class
+    card.className = `tx-card ${tx.status}`;
+    // Update badge
+    const badge = document.getElementById('badge-' + tx.id);
+    if (badge) { badge.className = `status-badge ${badgeClass(tx.status)}`; badge.textContent = badgeLabel(tx.status); }
+    // Update meta
+    const ms = document.getElementById('meta-status-' + tx.id);
+    if (ms) ms.textContent = tx.status;
+    const mr = document.getElementById('meta-resolved-' + tx.id);
+    if (mr) mr.textContent = tx.resolved_at ? fmtTime(tx.resolved_at) : 'Pending…';
+    // Bring flagged to top
+    if (tx.status === 'flagged') {
+      const feed = document.getElementById('feed');
+      const feedHeader = feed.querySelector('.feed-header');
+      feed.insertBefore(card, feedHeader.nextSibling);
+    }
+  }
+
+  function updateStats(txs) {
+    const total = txs.length;
+    const flagged = txs.filter(t => t.status === 'flagged').length;
+    const blocked = txs.filter(t => t.status === 'blocked').length;
+    const approved = txs.filter(t => ['approved','confirmed'].includes(t.status)).length;
+    const rate = total > 0 ? Math.round((approved / total) * 100) : null;
+    document.getElementById('statTotal').textContent = total;
+    document.getElementById('statFlagged').textContent = flagged;
+    document.getElementById('statBlocked').textContent = blocked;
+    document.getElementById('statApproval').textContent = rate !== null ? rate + '%' : '—';
+  }
+
+  function showAlert(tx) {
+    document.getElementById('alertText').innerHTML =
+      `<strong style="color:var(--warning)">${tx.device_label}</strong> — ${fmtCurrency(tx.amount)} at ${tx.merchant}<br>
+       Fraud score: <strong style="color:var(--danger)">${parseFloat(tx.fraud_score).toFixed(3)}</strong> · Status: <strong>${tx.status}</strong>`;
+    document.getElementById('alertBanner').classList.add('visible');
+    setTimeout(() => document.getElementById('alertBanner').classList.remove('visible'), 8000);
+  }
+
+  async function loadAll() {
+    const { data } = await sb.from('transactions').select('*').order('created_at', { ascending: false });
+    if (!data) return;
+    data.reverse().forEach(addTx);
+    updateStats(data);
+    // After load, show newest flagged on top
+    data.filter(t => t.status === 'flagged').forEach(t => {
+      const c = txMap[t.id];
+      if (c) {
+        const feed = document.getElementById('feed');
+        feed.insertBefore(c, document.querySelector('.feed-header').nextSibling);
+      }
+    });
+  }
+
+  function addTx(tx) {
+    const empty = document.getElementById('emptyState');
+    if (empty) empty.style.display = 'none';
+    const card = buildCard(tx);
+    txMap[tx.id] = card;
+    const feed = document.getElementById('feed');
+    const header = feed.querySelector('.feed-header');
+    feed.insertBefore(card, header.nextSibling);
+    if (tx.status === 'flagged') showAlert(tx);
+  }
+
+  // Subscribe to inserts and updates
+  sb.channel('dashboard-feed')
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'transactions' }, payload => {
+      const tx = payload.new;
+      if (txMap[tx.id]) return; // already there
+      addTx(tx);
+      recomputeStats();
+    })
+    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'transactions' }, payload => {
+      const tx = payload.new;
+      if (!txMap[tx.id]) { addTx(tx); } else { updateCard(tx); }
+      recomputeStats();
+    })
+    .subscribe();
+
+  async function recomputeStats() {
+    const { data } = await sb.from('transactions').select('status');
+    if (data) updateStats(data);
+  }
+
+  async function clearAll() {
+    if (!confirm('Delete all transactions? This cannot be undone.')) return;
+    await sb.from('transactions').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+    // Clear DOM
+    Object.keys(txMap).forEach(id => { txMap[id].remove(); delete txMap[id]; });
+    document.getElementById('emptyState').style.display = '';
+    updateStats([]);
+  }
+
+  loadAll();
+</script>
+</body>
+</html>

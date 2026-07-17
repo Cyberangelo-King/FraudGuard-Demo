@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FraudGuard — Real-Time Fraud Detection Simulation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0a0f;
+      --bg-2: #0f0f18;
+      --bg-3: #14141f;
+      --surface: #1a1a28;
+      --surface-2: #22223a;
+      --border: rgba(255,255,255,0.07);
+      --accent: #00d4ff;
+      --accent-glow: rgba(0,212,255,0.15);
+      --success: #00c853;
+      --danger: #ff3b30;
+      --warning: #ffb020;
+      --text: #f0f0f8;
+      --text-2: #9898b8;
+      --text-3: #5c5c80;
+      --font: 'DM Sans', -apple-system, sans-serif;
+    }
+
+    html { font-size: 16px; scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    /* ── Nav ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      padding: 0 2rem;
+      height: 64px;
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(10,10,15,0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-brand {
+      display: flex; align-items: center; gap: 10px;
+      text-decoration: none; color: var(--text);
+    }
+    .nav-logo {
+      width: 32px; height: 32px;
+      background: linear-gradient(135deg, #00d4ff, #0080ff);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 14px; color: #000;
+    }
+    .nav-title { font-weight: 600; font-size: 1rem; letter-spacing: -0.01em; }
+    .nav-badge {
+      font-size: 0.7rem; color: var(--text-3);
+      background: var(--surface); border: 1px solid var(--border);
+      padding: 2px 8px; border-radius: 100px;
+      font-weight: 500;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      padding: 140px 2rem 80px;
+      max-width: 900px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 0.78rem; font-weight: 500; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--accent);
+      background: var(--accent-glow); border: 1px solid rgba(0,212,255,0.2);
+      padding: 6px 16px; border-radius: 100px; margin-bottom: 28px;
+    }
+    .hero-eyebrow::before {
+      content: ''; width: 6px; height: 6px;
+      background: var(--accent); border-radius: 50%;
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+    @keyframes pulse-dot {
+      0%,100% { opacity:1; transform:scale(1); }
+      50% { opacity:0.4; transform:scale(0.7); }
+    }
+    h1 {
+      font-size: clamp(2.4rem, 5vw, 4rem);
+      font-weight: 700; letter-spacing: -0.03em;
+      line-height: 1.1;
+      background: linear-gradient(135deg, #fff 40%, #9898b8 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 20px;
+    }
+    .hero-sub {
+      font-size: 1.15rem; color: var(--text-2); max-width: 560px;
+      margin: 0 auto 40px; font-weight: 400;
+    }
+    .hero-meta {
+      display: flex; flex-wrap: wrap; justify-content: center; gap: 24px;
+      font-size: 0.83rem; color: var(--text-3);
+    }
+    .hero-meta span { display: flex; align-items: center; gap: 6px; }
+
+    /* ── Section ── */
+    .section { max-width: 1080px; margin: 0 auto; padding: 0 2rem 80px; }
+    .section-label {
+      font-size: 0.72rem; font-weight: 600; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--accent); margin-bottom: 32px;
+    }
+
+    /* ── Cards grid ── */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .nav-card {
+      display: block; text-decoration: none;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 16px; padding: 28px;
+      transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+      position: relative; overflow: hidden;
+    }
+    .nav-card::before {
+      content: ''; position: absolute; inset: 0;
+      opacity: 0; transition: opacity 0.2s;
+    }
+    .nav-card:hover {
+      border-color: rgba(0,212,255,0.3);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 40px rgba(0,212,255,0.08);
+    }
+    .nav-card:hover::before { opacity: 1; }
+
+    .card-icon {
+      width: 44px; height: 44px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem; margin-bottom: 16px;
+    }
+    .icon-owner { background: rgba(0,200,83,0.15); }
+    .icon-fraud { background: rgba(255,59,48,0.15); }
+    .icon-sec { background: rgba(0,212,255,0.15); }
+    .icon-dash { background: rgba(255,176,32,0.15); }
+    .icon-model { background: rgba(160,90,255,0.15); }
+
+    .card-tag {
+      font-size: 0.68rem; font-weight: 600; letter-spacing: 0.1em;
+      text-transform: uppercase; margin-bottom: 8px;
+      padding: 3px 9px; border-radius: 100px; display: inline-block;
+    }
+    .tag-device { color: var(--accent); background: var(--accent-glow); border: 1px solid rgba(0,212,255,0.2); }
+    .tag-admin  { color: var(--warning); background: rgba(255,176,32,0.1); border: 1px solid rgba(255,176,32,0.2); }
+    .tag-model  { color: #c084fc; background: rgba(160,90,255,0.1); border: 1px solid rgba(160,90,255,0.2); }
+
+    .card-title { font-size: 1.05rem; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+    .card-desc  { font-size: 0.875rem; color: var(--text-2); line-height: 1.55; }
+    .card-arrow {
+      position: absolute; right: 24px; top: 50%;
+      transform: translateY(-50%); font-size: 1.1rem;
+      color: var(--text-3); transition: color 0.2s, right 0.2s;
+    }
+    .nav-card:hover .card-arrow { color: var(--accent); right: 20px; }
+
+    /* ── Flow diagram ── */
+    .flow {
+      background: var(--bg-2); border: 1px solid var(--border);
+      border-radius: 20px; padding: 40px;
+      margin-top: 0;
+    }
+    .flow-title { font-size: 1rem; font-weight: 600; margin-bottom: 32px; color: var(--text); }
+    .flow-steps {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 0; position: relative;
+    }
+    .flow-step {
+      display: flex; flex-direction: column; align-items: center; text-align: center;
+      padding: 0 16px; position: relative;
+    }
+    .flow-step:not(:last-child)::after {
+      content: '→';
+      position: absolute; right: -8px; top: 24px;
+      color: var(--text-3); font-size: 1.2rem;
+    }
+    .flow-num {
+      width: 44px; height: 44px; border-radius: 50%;
+      background: var(--surface-2); border: 2px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 0.95rem; margin-bottom: 12px;
+      color: var(--accent);
+    }
+    .flow-label { font-size: 0.8rem; color: var(--text-2); font-weight: 500; }
+
+    /* ── Stats bar ── */
+    .stats-row {
+      display: flex; flex-wrap: wrap; gap: 1rem;
+      margin-bottom: 56px;
+    }
+    .stat-chip {
+      flex: 1; min-width: 160px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 20px 24px;
+    }
+    .stat-val { font-size: 1.6rem; font-weight: 700; color: var(--accent); letter-spacing: -0.02em; }
+    .stat-lbl { font-size: 0.8rem; color: var(--text-3); margin-top: 4px; }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 32px 2rem; text-align: center;
+      color: var(--text-3); font-size: 0.82rem;
+    }
+
+    @media(max-width:600px) {
+      .flow-step:not(:last-child)::after { display: none; }
+      .hero { padding: 120px 1.5rem 60px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-brand" href="index.html">
+    <div class="nav-logo">FG</div>
+    <span class="nav-title">FraudGuard</span>
+  </a>
+  <span class="nav-badge">FUTA · CS · 2026</span>
+</nav>
+
+<main>
+  <section class="hero">
+    <div class="hero-eyebrow">Live Simulation Active</div>
+    <h1>Real-Time Credit Card<br>Fraud Detection</h1>
+    <p class="hero-sub">A live demonstration of ensemble machine learning in action — detecting fraud across multiple devices in real time.</p>
+    <div class="hero-meta">
+      <span>👤 Angelo · Final Year Project</span>
+      <span>🏛️ Department of Computer Science</span>
+      <span>📍 Federal University of Technology, Akure</span>
+      <span>📅 July 2026</span>
+    </div>
+  </section>
+
+  <div class="section">
+    <div class="stats-row">
+      <div class="stat-chip">
+        <div class="stat-val">0.976</div>
+        <div class="stat-lbl">AUROC Score</div>
+      </div>
+      <div class="stat-chip">
+        <div class="stat-val">0.863</div>
+        <div class="stat-lbl">F1-Score</div>
+      </div>
+      <div class="stat-chip">
+        <div class="stat-val">0.682</div>
+        <div class="stat-lbl">Decision Threshold</div>
+      </div>
+      <div class="stat-chip">
+        <div class="stat-val">3.2ms</div>
+        <div class="stat-lbl">Inference Latency</div>
+      </div>
+    </div>
+
+    <p class="section-label">Simulation Pages</p>
+    <div class="cards-grid" style="margin-bottom:56px;">
+
+      <a class="nav-card" href="device-owner.html">
+        <div class="card-icon icon-owner">💳</div>
+        <div class="card-tag tag-device">Device 1</div>
+        <div class="card-title">Card Owner's Main Device</div>
+        <p class="card-desc">Legitimate checkout flow — low fraud score triggers instant approval. Receives security alerts when other devices flag.</p>
+        <span class="card-arrow">›</span>
+      </a>
+
+      <a class="nav-card" href="device-fraudster.html">
+        <div class="card-icon icon-fraud">🚨</div>
+        <div class="card-tag tag-device" style="color:var(--danger);background:rgba(255,59,48,0.1);border-color:rgba(255,59,48,0.2);">Device 2</div>
+        <div class="card-title">Fraudster's Device</div>
+        <p class="card-desc">High-risk checkout attempt — elevated fraud score triggers a hold and sends a verification challenge to the owner.</p>
+        <span class="card-arrow">›</span>
+      </a>
+
+      <a class="nav-card" href="device-secondary.html">
+        <div class="card-icon icon-sec">📱</div>
+        <div class="card-tag tag-device">Device 3</div>
+        <div class="card-title">Owner's Secondary Device</div>
+        <p class="card-desc">Moderate-risk transaction from a recognized secondary device — requires owner confirmation before proceeding.</p>
+        <span class="card-arrow">›</span>
+      </a>
+
+      <a class="nav-card" href="dashboard.html">
+        <div class="card-icon icon-dash">📊</div>
+        <div class="card-tag tag-admin">Admin</div>
+        <div class="card-title">Bank Fraud Dashboard</div>
+        <p class="card-desc">Live operations view — all transactions streamed in real time with fraud scores, status badges, and alert indicators.</p>
+        <span class="card-arrow">›</span>
+      </a>
+
+      <a class="nav-card" href="model.html">
+        <div class="card-icon icon-model">🧠</div>
+        <div class="card-tag tag-model">Research</div>
+        <div class="card-title">Model Showcase</div>
+        <p class="card-desc">Stacking ensemble architecture, key metrics, SHAP feature importance, and evaluation results from the trained model.</p>
+        <span class="card-arrow">›</span>
+      </a>
+
+    </div>
+
+    <p class="section-label">How the simulation works</p>
+    <div class="flow">
+      <div class="flow-steps">
+        <div class="flow-step">
+          <div class="flow-num">1</div>
+          <div class="flow-label">Device initiates checkout at Emunah</div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num">2</div>
+          <div class="flow-label">Fraud score computed from device signals</div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num">3</div>
+          <div class="flow-label">Score evaluated against 0.682 threshold</div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num">4</div>
+          <div class="flow-label">Transaction approved, flagged, or blocked</div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num">5</div>
+          <div class="flow-label">Dashboard updates in real time via Supabase</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  FraudGuard Simulation · Angelo · Federal University of Technology, Akure · Computer Science · July 2026
+</footer>
+
+</body>
+</html>
